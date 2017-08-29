@@ -1,17 +1,27 @@
-require 'HTTParty'
+require 'httparty'
+require 'json'
 
 
 class Kele
   include HTTParty
-  base_uri 'https://www.bloc.io/api/v1/'
 
-  def initialize(email, password)
-    self.class.post(sessions_url, attributes: { email: email, password: password } )
-    @auth_token = response["auth_token"]
+  def base_uri
+    'https://www.bloc.io/api/v1'
   end
 
-  private
-  def sessions_url
-    "https://www.bloc.io/api/v1"
+  def initialize(email, password)
+    options = {
+      body: { email: email, password: password }
+    }
+    response = self.class.post("#{base_uri}/sessions", options)
+    @auth_token = response['auth_token']
+    if @auth_token.nil?
+      puts "Sorry, invalid credentials."
+    end
+  end
+
+  def get_me
+    response = self.class.get("#{base_uri}/users/me", headers: { "authorization" => @auth_token })
+    JSON.parse(response.body)
   end
 end
