@@ -1,9 +1,11 @@
+require_relative 'roadmap'
 require 'httparty'
 require 'json'
 
 
 class Kele
   include HTTParty
+  include Roadmap
 
   def base_uri
     'https://www.bloc.io/api/v1'
